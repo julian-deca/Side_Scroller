@@ -2,7 +2,6 @@ body {
   background: black;
 }
 canvas {
-  background: blue;
   position: absolute;
   top: 50%;
   left: 50%;
