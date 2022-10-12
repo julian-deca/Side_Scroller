@@ -5,6 +5,7 @@ window.addEventListener("load", () => {
   const HEIGHT = (canvas.height = 720);
   let enemies = [];
   let score = 0;
+  let gameOver = false;
 
   class InputHandlers {
     constructor() {
@@ -51,7 +52,16 @@ window.addEventListener("load", () => {
       this.frameTimer = 0;
       this.frameInterval = 1000 / this.fps;
     }
-    update(input, deltaTime) {
+    update(input, deltaTime, enemies) {
+      enemies.forEach((enemy) => {
+        const dx = enemy.x - this.x;
+        const dy = enemy.y - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < enemy.width * 0.5 + this.width * 0.5) {
+          gameOver = true;
+        }
+      });
+
       if (this.frameTimer > this.frameInterval) {
         if (this.frameX >= this.maxFrame) this.frameX = 0;
         else this.frameX++;
@@ -87,7 +97,17 @@ window.addEventListener("load", () => {
     }
     draw(context) {
       context.fillStyle = "white";
-      // context.fillRect(this.x, this.y, this.width, this.height);
+      context.strokeStyle = "white";
+      context.strokeRect(this.x, this.y, this.width, this.height);
+      context.beginPath();
+      context.arc(
+        this.x + this.width * 0.5,
+        this.y + this.height * 0.5,
+        this.width / 2,
+        0,
+        Math.PI * 2
+      );
+      context.stroke();
       context.drawImage(
         this.image,
         this.width * this.frameX,
@@ -149,6 +169,17 @@ window.addEventListener("load", () => {
       this.markedForDeletion = false;
     }
     draw(context) {
+      context.strokeStyle = "white";
+      context.strokeRect(this.x, this.y, this.width, this.height);
+      context.beginPath();
+      context.arc(
+        this.x + this.width * 0.5,
+        this.y + this.height * 0.5,
+        this.width / 2,
+        0,
+        Math.PI * 2
+      );
+      context.stroke();
       context.drawImage(
         this.image,
         this.width * this.frameX,
@@ -191,6 +222,17 @@ window.addEventListener("load", () => {
     context.fillText("Score: " + score, 20, 50);
     context.fillStyle = "white";
     context.fillText("Score: " + score, 23, 53);
+    if (gameOver) {
+      context.textAlign = "center";
+      context.fillStyle = "black";
+      context.fillText("GAME OVER, your score is: " + score, WIDTH * 0.5, 200);
+      context.fillStyle = "white";
+      context.fillText(
+        "GAME OVER, your score is: " + score,
+        3 + WIDTH * 0.5,
+        200 + 3
+      );
+    }
   }
   const input = new InputHandlers();
   const player = new Player(WIDTH, HEIGHT);
@@ -207,10 +249,10 @@ window.addEventListener("load", () => {
     // background.update();
 
     player.draw(ctx);
-    player.update(input, deltaTime);
+    player.update(input, deltaTime, enemies);
     handleEnemies(deltaTime);
     displayStatusText(ctx);
-    requestAnimationFrame(animate);
+    if (!gameOver) requestAnimationFrame(animate);
   }
   animate(0);
 });
