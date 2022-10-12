@@ -55,10 +55,12 @@ window.addEventListener("load", () => {
     }
     update(input, deltaTime, enemies) {
       enemies.forEach((enemy) => {
-        const dx = enemy.x + enemy.width * 0.5 - (this.x + this.width * 0.5);
-        const dy = enemy.y + enemy.height * 0.5 - (this.y + this.height * 0.5);
+        const dx =
+          enemy.x + enemy.width * 0.5 - 13 - (this.x + this.width * 0.5);
+        const dy =
+          enemy.y + enemy.height * 0.5 + 13 - (this.y + this.height * 0.5);
         const distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < enemy.width * 0.5 + this.width * 0.5) {
+        if (distance < enemy.width * 0.5 - 13 + this.width * 0.5) {
           gameOver = true;
         }
       });
@@ -99,18 +101,6 @@ window.addEventListener("load", () => {
         this.y = this.gameHeight - this.height;
     }
     draw(context) {
-      context.fillStyle = "white";
-      context.strokeStyle = "white";
-      context.strokeRect(this.x, this.y, this.width, this.height);
-      context.beginPath();
-      context.arc(
-        this.x + this.width * 0.5,
-        this.y + this.height * 0.5,
-        this.width / 2,
-        0,
-        Math.PI * 2
-      );
-      context.stroke();
       context.drawImage(
         this.image,
         this.width * this.frameX,
@@ -172,17 +162,6 @@ window.addEventListener("load", () => {
       this.markedForDeletion = false;
     }
     draw(context) {
-      context.strokeStyle = "white";
-      context.strokeRect(this.x, this.y, this.width, this.height);
-      context.beginPath();
-      context.arc(
-        this.x + this.width * 0.5,
-        this.y + this.height * 0.5,
-        this.width / 2,
-        0,
-        Math.PI * 2
-      );
-      context.stroke();
       context.drawImage(
         this.image,
         this.width * this.frameX,
@@ -249,7 +228,7 @@ window.addEventListener("load", () => {
     lastTime = timeStamp;
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
     background.draw(ctx);
-    // background.update();
+    background.update();
 
     player.draw(ctx);
     player.update(input, deltaTime, enemies);
