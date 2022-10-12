@@ -19,6 +19,7 @@ window.addEventListener("load", () => {
           this.keys.indexOf(e.key) === -1
         ) {
           this.keys.push(e.key);
+          console.log(this.keys);
         }
       });
       window.addEventListener("keyup", (e) => {
@@ -54,8 +55,8 @@ window.addEventListener("load", () => {
     }
     update(input, deltaTime, enemies) {
       enemies.forEach((enemy) => {
-        const dx = enemy.x - this.x;
-        const dy = enemy.y - this.y;
+        const dx = enemy.x + enemy.width * 0.5 - (this.x + this.width * 0.5);
+        const dy = enemy.y + enemy.height * 0.5 - (this.y + this.height * 0.5);
         const distance = Math.sqrt(dx * dx + dy * dy);
         if (distance < enemy.width * 0.5 + this.width * 0.5) {
           gameOver = true;
@@ -72,10 +73,12 @@ window.addEventListener("load", () => {
         this.speed = 5;
       } else if (input.keys.indexOf("ArrowLeft") > -1) {
         this.speed = -5;
-      } else if (input.keys.indexOf("ArrowUp") > -1 && this.onGround()) {
-        this.vy -= 32;
       } else {
         this.speed = 0;
+      }
+      if (input.keys.indexOf("ArrowUp") > -1 && this.onGround()) {
+        console.log("aaaa");
+        this.vy -= 32;
       }
       if (this.x < 0) this.x = 0;
       else if (this.x > this.gameWidth - this.width)
