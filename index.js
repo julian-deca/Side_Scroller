@@ -45,8 +45,17 @@ window.addEventListener("load", () => {
       this.speed = 0;
       this.vy = 0;
       this.weight = 1;
+      this.maxFrame = 8;
+      this.fps = 20;
+      this.frameTimer = 0;
+      this.frameInterval = 1000 / this.fps;
     }
-    update(input) {
+    update(input, deltaTime) {
+      if (this.frameTimer > this.frameInterval) {
+        if (this.frameX >= this.maxFrame) this.frameX = 0;
+        else this.frameX++;
+        this.frameTimer = 0;
+      } else this.frameTimer += deltaTime;
       this.x += this.speed;
       if (input.keys.indexOf("ArrowRight") > -1) {
         this.speed = 5;
@@ -64,9 +73,12 @@ window.addEventListener("load", () => {
       this.y += this.vy;
       if (!this.onGround()) {
         this.vy += this.weight;
+        this.maxFrame = 5;
         this.frameY = 1;
       } else {
         this.vy = 0;
+        this.maxFrame = 8;
+
         this.frameY = 0;
       }
       if (this.y > this.gameHeight - this.height)
@@ -131,8 +143,9 @@ window.addEventListener("load", () => {
       this.fps = 20;
       this.frameTimer = 0;
       this.frameInterval = 1000 / this.fps;
-      this.speed = 1;
+      this.speed = 8;
       this.frameX = 0;
+      this.markedForDeletion = false;
     }
     draw(context) {
       context.drawImage(
@@ -148,8 +161,12 @@ window.addEventListener("load", () => {
       );
     }
     update(deltaTime) {
-      if (this.frameX >= this.maxFrame) this.frameX = 0;
-      else this.frameX++;
+      if (this.frameTimer > this.frameInterval) {
+        if (this.frameX >= this.maxFrame) this.frameX = 0;
+        else this.frameX++;
+        this.frameTimer++;
+      } else this.frameTimer += deltaTime;
+      if (this.x < 0 - this.width) this.markedForDeletion = true;
       this.x -= this.speed;
     }
   }
@@ -162,6 +179,7 @@ window.addEventListener("load", () => {
       enemy.draw(ctx);
       enemy.update(deltaTime);
     });
+    enemies = enemies.filter((enemy) => !enemy.markedForDeletion);
   }
   function displayStatusText() {}
   const input = new InputHandlers();
@@ -179,7 +197,7 @@ window.addEventListener("load", () => {
     // background.update();
 
     player.draw(ctx);
-    player.update(input);
+    player.update(input, deltaTime);
     handleEnemies(deltaTime);
     requestAnimationFrame(animate);
   }
